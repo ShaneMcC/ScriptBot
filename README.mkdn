@@ -1,0 +1,32 @@
+# About ########################################################################
+
+This project is mainly to play about with rhino, but in theory could be used
+properly at some point.
+
+The core of the bot is a modified dfbnc-java, but not much of that remains,
+this bot also (Obviously!) uses the DMDirc parser for all it's IRC needs.
+
+In theory, other DMDirc parsers will be useable in the future to allow making
+bots that work on other platforms.
+
+For now, IRC only.
+
+# Usage #########################################################################
+
+Examples are in ExampleConfig, you can "mv ExampleConfig ScriptBot" to get
+started.
+
+ScriptBot.conf is the main config file, but all this does currently is point to
+a list of server configs.
+
+Each server config then has the required IRC bits, a list of channels to
+autojoin and scripts to load.
+
+Scripts are loaded from scripts/ under the config directory.
+
+# Questions #####################################################################
+
+Questions should be directed to Dataforce on Quakenet, or anywhere else you
+happen to be able to reach me.
+
+Quakenet #DMDirc is probably your best bet.
