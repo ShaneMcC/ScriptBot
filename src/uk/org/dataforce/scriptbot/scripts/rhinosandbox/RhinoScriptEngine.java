@@ -60,8 +60,12 @@ public class RhinoScriptEngine implements ScriptBotEngine, Invocable {
      */
     private Context enterContext() {
         final Context cx = Context.enter();
-        cx.setWrapFactory(new WrapFactory());
-        cx.setClassShutter(new ClassShutter());
+        try {
+            cx.setClassShutter(new ClassShutter());
+            cx.setWrapFactory(new WrapFactory());
+        } catch (final SecurityException se) {
+            // ClassShutter is already set, so we might be already in a context
+        }
         return cx;
     }
 

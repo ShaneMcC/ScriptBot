@@ -52,6 +52,9 @@ public class Script {
     /** My file. */
     private final File myFile;
 
+    /** My file type. */
+    private final String myType;
+
     /**
      * Load a script using the given type, or guess based on the file extension
      * if null type is given.
@@ -65,20 +68,30 @@ public class Script {
         myHandler = handler;
         myFile = file;
         myLogger.setTag(myHandler.getServer().getName() + ">" + file.getName());
+        myType = type;
 
-        if (type == null) {
-            final String filename = file.getName();
+        myEngine = initEngine();
+    }
+
+    private ScriptBotEngine initEngine() throws ScriptException {
+        ScriptBotEngine newEngine;
+        if (myType == null) {
+            final String filename = myFile.getName();
             if (filename.lastIndexOf('.') == -1 || filename.lastIndexOf('.') >= filename.length()) {
-                myHandler.getLogger().error("Unable to find ScriptEngine for: '" + file + "' (No file extension found)");
+                myHandler.getLogger().error("Unable to find ScriptEngine for: '" + myFile + "' (No file extension found)");
             }
-            final String extension = file.getName().substring(file.getName().lastIndexOf('.') + 1);
-            myEngine = ScriptFactory.getEngineByExtension(extension);
+            final String extension = myFile.getName().substring(myFile.getName().lastIndexOf('.') + 1);
+            newEngine = ScriptFactory.getEngineByExtension(extension);
+            if (newEngine == null) {
+                throw new ScriptException("Unable to find ScriptEngine for: '" + myFile + "' (Extension: '" + extension + "')");
+            }
         } else {
-            myEngine = ScriptFactory.getEngineByType(type);
+            newEngine = ScriptFactory.getEngineByType(myType);
+            if (newEngine == null) {
+                throw new ScriptException("Unable to find ScriptEngine for: '" + myFile + "' (Type: '" + myType + "')");
+            }
         }
-        if (myEngine == null) {
-            throw new ScriptException("Unable to find ScriptEngine for: '" + file + "' (Type: '" + type + "')");
-        }
+        return newEngine;
     }
 
 
@@ -88,9 +101,29 @@ public class Script {
      * @return True if script loaded.
      */
     public boolean load() {
+        return load(myEngine, myScriptBridge);
+    }
+
+    /**
+     * Get the ScriptHandler for this script.
+     *
+     * @return ScriptHandler for this script.
+     */
+    public ScriptHandler getHandler() {
+        return myHandler;
+    }
+
+    /**
+     * Load the script into the given engine with the given bridge.
+     *
+     * @param engine Engine to use.
+     * @param bridge Bridge to use
+     * @return True if script loaded.
+     */
+    private boolean load(final ScriptBotEngine engine, final ScriptBridge bridge) {
         try {
-            myEngine.put("bot", myScriptBridge);
-            myEngine.eval(new FileReader(myFile));
+            engine.put("bot", bridge);
+            engine.eval(new FileReader(myFile));
             getLogger().info("Loaded script '" + getFilePath(myFile) + "'");
             // call("onScriptLoaded");
             return true;
@@ -102,6 +135,27 @@ public class Script {
         return false;
     }
 
+    /**
+     * Reload this script.
+     */
+    public void reload() throws ScriptException {
+        // call("onScriptUnloaded");
+        getLogger().info("Reloading script '" + getFilePath(myFile) + "'...");
+        final ScriptBotEngine engine = initEngine();
+        if (engine != null) {
+            final ScriptBridge bridge = new ScriptBridge(this);
+
+            if (load(engine, bridge)) {
+                myScriptBridge.unbindAll();
+                myScriptBridge = bridge;
+                myEngine.put("bot", null);
+                myEngine = engine;
+                getLogger().info("Reloading script '" + getFilePath(myFile) + "' was successful, new script is active.");
+            } else {
+                getLogger().info("Reloading script '" + getFilePath(myFile) + "' failed, keeping old script.");
+            }
+        }
+    }
 
     /**
      * Unload this script.
@@ -112,6 +166,7 @@ public class Script {
         // call("onScriptUnloaded");
         getLogger().info("Unloaded script '" + getFilePath(myFile) + "'");
         myScriptBridge.unbindAll();
+        myEngine.put("bot", null);
         myEngine = null;
         myScriptBridge = new ScriptBridge(this);
         myLogger = null;

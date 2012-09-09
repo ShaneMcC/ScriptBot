@@ -41,7 +41,7 @@ public class ScriptHandler {
     private final Server myServer;
 
     /** Store Script State Name,Engine */
-    private Map<String, Script> scripts = new HashMap<String,Script>();
+    private final Map<String, Script> scripts = new HashMap<String,Script>();
 
     /**
      * Create a new ScriptHandler.
@@ -83,7 +83,9 @@ public class ScriptHandler {
             try {
                 final Script script = new Script(this, file, type);
                 if (script.load()) {
-                    scripts.put(getFilePath(file), script);
+                    synchronized (scripts) {
+                        scripts.put(getFilePath(file), script);
+                    }
                     return true;
                 }
             } catch (final ScriptException se) {
@@ -149,13 +151,28 @@ public class ScriptHandler {
     }
 
     /**
+     * Reload all scripts.
+     */
+    public void reloadAll() {
+        synchronized (scripts) {
+            for (final Script script : new ArrayList<Script>(scripts.values())) {
+                try {
+                    script.reload();
+                } catch (final ScriptException se) { /* Ignore, it will have been logged */ }
+            }
+        }
+    }
+
+    /**
      * Unload all scripts.
      */
     public void unload() {
-        final List<Script> oldScripts = new ArrayList<Script>(scripts.values());
-        scripts.clear();
-        for (final Script script : oldScripts) {
-            script.unload();
+        synchronized (scripts) {
+            final List<Script> oldScripts = new ArrayList<Script>(scripts.values());
+            scripts.clear();
+            for (final Script script : oldScripts) {
+                script.unload();
+            }
         }
     }
 }

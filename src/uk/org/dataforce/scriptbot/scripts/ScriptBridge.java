@@ -155,4 +155,11 @@ public class ScriptBridge {
     public void unbindAll() {
         bindings.clear();
     }
+
+    /**
+     * Rehash the bot.
+     */
+    public void rehash() {
+        myScript.getHandler().reloadAll();
+    }
 }

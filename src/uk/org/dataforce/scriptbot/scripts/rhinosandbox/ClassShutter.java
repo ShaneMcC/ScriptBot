@@ -29,7 +29,7 @@ package uk.org.dataforce.scriptbot.scripts.rhinosandbox;
 public class ClassShutter implements org.mozilla.javascript.ClassShutter {
     /** {@inheritDoc} */
     @Override
-    public boolean visibleToScripts(String className) {
+    public boolean visibleToScripts(final String className) {
         if (className.startsWith("adapter") ||
             className.startsWith("com.dmdirc.parser.") ||
             className.startsWith("java.util.") ||
@@ -39,6 +39,8 @@ public class ClassShutter implements org.mozilla.javascript.ClassShutter {
         } else if (className.startsWith("uk.org.dataforce.scriptbot") && !className.startsWith("uk.org.dataforce.scriptbot.scripts")) {
             return true;
         }
+
+        System.out.println("Denied Class: "+ className);
 
         return false;
     }
