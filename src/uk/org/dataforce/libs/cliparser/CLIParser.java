@@ -32,8 +32,6 @@ import uk.org.dataforce.libs.logger.Logger;
  * Command Line argument parser.
  */
 public class CLIParser {
-    /** Singleton instance of CLIParser. */
-    private static CLIParser me;
 
     /** What parameter is used for help? */
     private CLIParam helpParam = null;
@@ -62,17 +60,14 @@ public class CLIParser {
     private String[] lastArgs = null;
 
     /**
-     * Get a reference to the CLIParser.
-     *
-     * @return The reference to the CLIParser in use
+     * My Logger
      */
-    public static synchronized CLIParser getCLIParser() {
-        if (me == null) { me = new CLIParser(); }
-        return me;
-    }
+    private Logger logger;
 
     /** Private constructor for CLIParser to prevent non-singleton instance. */
-    private CLIParser() { }
+    public CLIParser(final Logger logger) {
+        this.logger = logger;
+    }
 
     /** Clear known params from the hashtable. */
     public void clear() {
@@ -93,11 +88,11 @@ public class CLIParser {
         if (validChar && validString) {
             if (param.getChr() != 0) {
                 params.put(""+param.getChr(), param);
-                Logger.debug2("Added Param: [-"+param.getChr()+"]");
+                logger.debug2("Added Param: [-"+param.getChr()+"]");
             }
             if (param.getString().length() > 0) {
                 params.put("-"+param.getString().toLowerCase(), param);
-                Logger.debug2("Added Param: [--"+param.getString()+"]");
+                logger.debug2("Added Param: [--"+param.getString()+"]");
             }
             paramList.add(param);
             return true;
@@ -247,10 +242,10 @@ public class CLIParser {
                     for (String name : givenParams) {
                         lastParam = getParam(name);
                         if (lastParam != null) {
-                            Logger.debug("Got Param: -"+name);
+                            logger.debug("Got Param: -"+name);
                             lastParam.incNumber();
                         } else {
-                            Logger.warning("Unknown Param: -"+name);
+                            logger.warning("Unknown Param: -"+name);
                             if (helpParam != null) {
                                 String command = "";
                                 if (helpParam.getString().length() > 0) {
@@ -259,7 +254,7 @@ public class CLIParser {
                                     command = ""+helpParam.getChr();
                                 }
                                 if (command.length() > 0) {
-                                    Logger.warning("Use "+command+" to get help.");
+                                    logger.warning("Use "+command+" to get help.");
                                 }
                             }
                             if (strict) {
@@ -271,10 +266,10 @@ public class CLIParser {
             } else {
                 if (arg.charAt(0) == '\\' && arg.length() > 1) { arg = arg.substring(1); }
                 if (lastParam != null && !allRedundant && lastParam.setValue(arg)) {
-                    Logger.debug2("Param Value: "+arg);
+                    logger.debug2("Param Value: "+arg);
                     lastParam = null;
                 } else {
-                    Logger.debug2("Redundant Value: "+arg);
+                    logger.debug2("Redundant Value: "+arg);
                     redundant.add(arg);
                 }
             }

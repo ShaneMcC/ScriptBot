@@ -39,7 +39,7 @@
 	<property name="main.src.dir" value="src"/>
 	<property name="parser.src.dir" value="modules/parser/src" />
 	<property name="akuma.src.dir" value="modules/akuma/src/main/java/" />
-	<property name="libs.jars" value="libs/jna/jna.jar,libs/jna/platform.jar" />
+	<property name="libs.jars" value="libs/jna/jna.jar,libs/jna/platform.jar,libs/rhino/js.jar" />
 	<propertyregex property="libs.classpath" input="${libs.jars}" regexp="," replace=":" global="true" />
 	<!-- <property name="libs.jars" value="libs/jna/jna.jar:libs/jna/platform.jar" /> -->
 	<var name="mergelibs" value="true"/>

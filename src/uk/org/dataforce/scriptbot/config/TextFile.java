@@ -34,6 +34,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import uk.org.dataforce.libs.logger.Logger;
+import uk.org.dataforce.scriptbot.ScriptBot;
 
 /**
  * Allows reading and writing to a plain text file via a list of lines.
@@ -193,7 +194,7 @@ public class TextFile {
         }
 
         if (!file.delete()) {
-            Logger.error("Unable to delete file");
+            ScriptBot.getBot().getLogger().error("Unable to delete file");
         }
     }
 }

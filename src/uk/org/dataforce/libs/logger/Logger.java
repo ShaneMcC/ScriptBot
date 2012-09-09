@@ -29,20 +29,34 @@ import java.io.BufferedWriter;
  */
 public class Logger {
     /** Current log level. */
-    private static LogLevel logLevel = LogLevel.DEBUG2;
+    private LogLevel logLevel = LogLevel.DEBUG2;
 
     /** Optional Tag for log entries. */
-    private static String logTag = "";
+    private String logTag = "";
 
     /** Optional BufferedWriter to write output to in addition to console. */
-    private static BufferedWriter writer = null;
+    private BufferedWriter writer = null;
+
+    /**
+     * Create a new default Logger.
+     */
+    public Logger() { }
+
+    /**
+     * Create a new logger at the given log level
+     *
+     * @param Logger
+     */
+    public Logger(final LogLevel logLevel) {
+        this.logLevel = logLevel;
+    }
 
     /**
      * Change the logTag for this logger.
      *
      * @param newTag New tag to use.
      */
-    public static void setTag(final String newTag) {
+    public void setTag(final String newTag) {
         logTag = (newTag == null) ? "" : newTag;
     }
 
@@ -51,7 +65,7 @@ public class Logger {
      *
      * @return The current log tag.
      */
-    public static String getTag() {
+    public String getTag() {
         return logTag;
     }
 
@@ -64,7 +78,7 @@ public class Logger {
      *
      * @param newWriter New writer to use.
      */
-    public static void setWriter(final BufferedWriter newWriter) {
+    public void setWriter(final BufferedWriter newWriter) {
         writer = newWriter;
     }
 
@@ -73,7 +87,7 @@ public class Logger {
      *
      * @return The writer we are using.
      */
-    public static BufferedWriter getWriter() {
+    public BufferedWriter getWriter() {
         return writer;
     }
 
@@ -83,7 +97,7 @@ public class Logger {
      * @param level Level of this information.
      * @param data Information to log.
      */
-    public static void log(final LogLevel level, final String data) {
+    public void log(final LogLevel level, final String data) {
         if (level.isLoggable(logLevel) && level != LogLevel.SILENT) {
             final String output = data == null ? "" : String.format("[%s%s] %s", (logTag.isEmpty() ? "" : logTag + ":"), level, data);
 
@@ -107,7 +121,7 @@ public class Logger {
      *
      * @param data Information to log.
      */
-    public static void error(final String data) {
+    public void error(final String data) {
         log(LogLevel.ERROR, data);
     }
 
@@ -116,7 +130,7 @@ public class Logger {
      *
      * @param data Information to log.
      */
-    public static void warning(final String data) {
+    public void warning(final String data) {
         log(LogLevel.WARNING, data);
     }
 
@@ -125,7 +139,7 @@ public class Logger {
      *
      * @param data Information to log.
      */
-    public static void info(final String data) {
+    public void info(final String data) {
         log(LogLevel.INFO, data);
     }
 
@@ -134,7 +148,7 @@ public class Logger {
      *
      * @param data Information to log.
      */
-    public static void debug(final String data) {
+    public void debug(final String data) {
         log(LogLevel.DEBUG, data);
     }
 
@@ -143,7 +157,7 @@ public class Logger {
      *
      * @param data Information to log.
      */
-    public static void debug2(final String data) {
+    public void debug2(final String data) {
         log(LogLevel.DEBUG2, data);
     }
 
@@ -152,7 +166,7 @@ public class Logger {
      *
      * @param data Information to log.
      */
-    public static void debug3(final String data) {
+    public void debug3(final String data) {
         log(LogLevel.DEBUG3, data);
     }
 
@@ -161,7 +175,7 @@ public class Logger {
      *
      * @param data Information to log.
      */
-    public static void debug4(final String data) {
+    public void debug4(final String data) {
         log(LogLevel.DEBUG4, data);
     }
 
@@ -170,7 +184,7 @@ public class Logger {
      *
      * @param data Information to log.
      */
-    public static void debug5(final String data) {
+    public void debug5(final String data) {
         log(LogLevel.DEBUG5, data);
     }
 
@@ -179,7 +193,7 @@ public class Logger {
      *
      * @param data Information to log.
      */
-    public static void debug6(final String data) {
+    public void debug6(final String data) {
         log(LogLevel.DEBUG6, data);
     }
 
@@ -188,7 +202,7 @@ public class Logger {
      *
      * @param data Information to log.
      */
-    public static void debug7(final String data) {
+    public void debug7(final String data) {
         log(LogLevel.DEBUG7, data);
     }
 
@@ -197,7 +211,7 @@ public class Logger {
      *
      * @param data Information to log.
      */
-    public static void debug8(final String data) {
+    public void debug8(final String data) {
         log(LogLevel.DEBUG8, data);
     }
 
@@ -206,7 +220,7 @@ public class Logger {
      *
      * @param data Information to log.
      */
-    public static void debug9(final String data) {
+    public void debug9(final String data) {
         log(LogLevel.DEBUG9, data);
     }
 
@@ -216,7 +230,7 @@ public class Logger {
      *
      * @return The current LogLevel.
      */
-    public static LogLevel getLevel() {
+    public LogLevel getLevel() {
         return logLevel;
     }
 
@@ -226,11 +240,8 @@ public class Logger {
      *
      * @param level The new LogLevel.
      */
-    public static void setLevel(final LogLevel level) {
+    public void setLevel(final LogLevel level) {
         logLevel = level;
         debug2("LogLevel changed to: "+level);
     }
-
-    /** Prevent instances of Logger */
-    private Logger() {    }
 }

@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import uk.org.dataforce.libs.logger.Logger;
 import uk.org.dataforce.libs.util.WeakList;
+import uk.org.dataforce.scriptbot.ScriptBot;
 
 /**
  * Configuration Files.
@@ -149,6 +150,42 @@ public class Config {
      */
     public Map<String, String> getOptionDomain(final String domain) {
         return config.getKeyDomain(domain);
+    }
+
+    /**
+     * Get flat domain from the config
+     *
+     * @param domain Domain for option
+     * @return the requested option domain, or null
+     */
+    public List<String> getFlatDomain(final String domain) {
+        return new ArrayList<String>(config.getFlatDomain(domain));
+    }
+
+    /**
+     * Check if a flat domain exists in the config
+     *
+     * @param domain Domain for option
+     * @return true or false
+     */
+    public boolean hasFlatDomain(final String domain) {
+        return config.hasDomain(domain) && config.isFlatDomain(domain);
+    }
+
+    /**
+     * Set the contents of a flat domain.
+     *
+     * @param domain Domain name.
+     * @param items Items to include.
+     */
+    public void setFlatDomain(final String domain, final List<String> items) {
+        if (!config.hasDomain(domain)) {
+            config.addDomain(domain, items);
+        } else {
+            final List<String> list = config.getFlatDomain(domain);
+            list.clear();
+            list.addAll(items);
+        }
     }
 
     /**
@@ -455,7 +492,7 @@ public class Config {
         try {
             config.write();
         } catch (IOException ex) {
-            Logger.error("Unable to save config: " + ex.getMessage());
+            ScriptBot.getBot().getLogger().error("Unable to save config: " + ex.getMessage());
         }
     }
 }
