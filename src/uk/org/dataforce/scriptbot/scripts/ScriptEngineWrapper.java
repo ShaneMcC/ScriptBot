@@ -37,6 +37,11 @@ class ScriptEngineWrapper implements ScriptBotEngine, Compilable, Invocable {
     /** My Engine */
     final ScriptEngine myEngine;
 
+    /**
+     * Create a new ScriptEngineWrapper that Wraps the given ScriptEngine
+     *
+     * @param engine ScriptEngine to wrap.
+     */
     public ScriptEngineWrapper(final ScriptEngine engine) {
         myEngine = engine;
     }

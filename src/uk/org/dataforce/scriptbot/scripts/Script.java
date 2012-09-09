@@ -83,10 +83,8 @@ public class Script {
 
 
     /**
-     * Load a script into the given engine.
+     * Load the script into the engine.
      *
-     * @param file File to load.
-     * @param engine Engine to load script into.
      * @return True if script loaded.
      */
     public boolean load() {
@@ -94,7 +92,7 @@ public class Script {
             myEngine.put("bot", myScriptBridge);
             myEngine.eval(new FileReader(myFile));
             getLogger().info("Loaded script '" + getFilePath(myFile) + "'");
-            call("onScriptLoaded");
+            // call("onScriptLoaded");
             return true;
         } catch (final FileNotFoundException ex) {
             getLogger().error("Error loading script '" + getFilePath(myFile) + "': " + ex.getMessage());
@@ -102,6 +100,21 @@ public class Script {
             getLogger().error("Error loading script '" + getFilePath(myFile) + "': " + ex.getMessage());
         }
         return false;
+    }
+
+
+    /**
+     * Unload this script.
+     *
+     * Once this is called, this script object can not be used again.
+     */
+    public void unload() {
+        // call("onScriptUnloaded");
+        getLogger().info("Unloaded script '" + getFilePath(myFile) + "'");
+        myScriptBridge.unbindAll();
+        myEngine = null;
+        myScriptBridge = new ScriptBridge(this);
+        myLogger = null;
     }
 
     /**

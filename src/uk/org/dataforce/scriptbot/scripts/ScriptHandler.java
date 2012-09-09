@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.script.ScriptException;
@@ -130,10 +131,9 @@ public class ScriptHandler {
      * @param args Arguments for functions.
      */
     public void callBound(final String function, final Object... args) {
-        getLogger().info("Calling: " + function);
         for (final Script script : new ArrayList<Script>(scripts.values())) {
-            final Set<ScriptBridge.BoundMethod> bound = script.getBridge().__getBindings(function);
-            for (ScriptBridge.BoundMethod b : bound) {
+            final Set<BoundMethod> bound = script.getBridge().__getBindings(function);
+            for (BoundMethod b : bound) {
                 script.call(b.object, b.method, args);
             }
         }
@@ -146,5 +146,16 @@ public class ScriptHandler {
      */
     public Logger getLogger() {
         return myServer.getLogger();
+    }
+
+    /**
+     * Unload all scripts.
+     */
+    public void unload() {
+        final List<Script> oldScripts = new ArrayList<Script>(scripts.values());
+        scripts.clear();
+        for (final Script script : oldScripts) {
+            script.unload();
+        }
     }
 }

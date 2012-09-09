@@ -25,7 +25,7 @@ import javax.script.ScriptEngineManager;
 import uk.org.dataforce.scriptbot.scripts.rhinosandbox.RhinoScriptEngine;
 
 /**
- * Script Factory. This hands out ScriptEngines
+ * Script Factory. This hands out ScriptBotEngines as appropriate.
  */
 public class ScriptFactory {
 

@@ -24,6 +24,9 @@ package uk.org.dataforce.scriptbot.scripts.rhinosandbox;
 import org.mozilla.javascript.Context;
 
 /**
+ * This is used to ensure we generate contexts with the correct WrapFactory
+ * and ClassShutter.
+ * 
  * From http://codeutopia.net/blog/2009/01/02/sandboxing-rhino-in-java/
  */
 public class ContextFactory extends org.mozilla.javascript.ContextFactory {

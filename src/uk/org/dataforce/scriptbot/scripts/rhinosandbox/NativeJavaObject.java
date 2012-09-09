@@ -24,6 +24,9 @@ package uk.org.dataforce.scriptbot.scripts.rhinosandbox;
 import org.mozilla.javascript.Scriptable;
 
 /**
+ * Wrapper for Java Objects, this class ensures that certain methods in the
+ * class are inaccessible to scripts.
+ *
  * From http://codeutopia.net/blog/2009/01/02/sandboxing-rhino-in-java/
  */
 public class NativeJavaObject extends org.mozilla.javascript.NativeJavaObject {
@@ -40,7 +43,7 @@ public class NativeJavaObject extends org.mozilla.javascript.NativeJavaObject {
         if (name.equals("getClass")) {
             return Scriptable.NOT_FOUND;
         }
-        
+
         if (name.startsWith("__")) {
             return Scriptable.NOT_FOUND;
         }

@@ -24,7 +24,12 @@ package uk.org.dataforce.scriptbot;
 import uk.org.dataforce.scriptbot.scripts.ScriptHandler;
 import com.dmdirc.parser.common.MyInfo;
 import com.dmdirc.parser.interfaces.Parser;
-import com.dmdirc.parser.interfaces.callbacks.*;
+import com.dmdirc.parser.interfaces.callbacks.DataInListener;
+import com.dmdirc.parser.interfaces.callbacks.DataOutListener;
+import com.dmdirc.parser.interfaces.callbacks.DebugInfoListener;
+import com.dmdirc.parser.interfaces.callbacks.NickInUseListener;
+import com.dmdirc.parser.interfaces.callbacks.ServerReadyListener;
+import com.dmdirc.parser.interfaces.callbacks.NumericListener;
 import com.dmdirc.parser.irc.IRCParser;
 import java.io.File;
 import java.net.URI;
@@ -33,11 +38,12 @@ import java.util.Date;
 import uk.org.dataforce.libs.logger.LogFactory;
 import uk.org.dataforce.libs.logger.Logger;
 import uk.org.dataforce.scriptbot.config.Config;
+import uk.org.dataforce.scriptbot.scripts.ParserBridge;
 
 /**
  * Class that represents an individual server.
  */
-public class Server implements ServerReadyListener, DataInListener, DataOutListener, DebugInfoListener {
+public class Server implements ServerReadyListener, DataInListener, DataOutListener, DebugInfoListener, NickInUseListener, NumericListener {
 
     /** My Manager. */
     private final ServerManager manager;
@@ -54,8 +60,20 @@ public class Server implements ServerReadyListener, DataInListener, DataOutListe
     /** My Script Handler */
     private ScriptHandler myScriptHandler;
 
+    /** My Parser Bridge */
+    private ParserBridge myParserBridge;
+
     /** My logger. */
     private Logger logger;
+
+    /** Have we had the 001 from our server? (Used for nickinuse) */
+    private boolean got001 = false;
+
+    /** Have we tried our altnick? (Used for nickinuse) */
+    private boolean triedAlt = false;
+
+    /** What nickname do we think we have? (Used for nickinuse) */
+    private String thinkNickname;
 
     /**
      * Create a new Server
@@ -117,6 +135,15 @@ public class Server implements ServerReadyListener, DataInListener, DataOutListe
     }
 
     /**
+     * Get the script handler for this Server
+     *
+     * @return The script handler for this Server
+     */
+    public ScriptHandler getScriptHandler() {
+        return myScriptHandler;
+    }
+
+    /**
      * Create a new parser based on the config file.
      *
      * @return New PARSER instance based on the config file.
@@ -139,6 +166,7 @@ public class Server implements ServerReadyListener, DataInListener, DataOutListe
 
             IRCParser ircparser = new IRCParser(myDetails, uri);
             parser = ircparser;
+            thinkNickname = nickname;
 
             if (configFile.hasOption("server", "bindip")) {
                 parser.setBindIP(configFile.getOption("server", "bindip", ""));
@@ -176,7 +204,10 @@ public class Server implements ServerReadyListener, DataInListener, DataOutListe
             }
         }
 
+        got001 = false;
+        triedAlt = false;
         myParser.getCallbackManager().addAllCallback(this);
+        myParserBridge = new ParserBridge(this);
         myParser.connect();
 
         return true;
@@ -195,6 +226,10 @@ public class Server implements ServerReadyListener, DataInListener, DataOutListe
         } else {
             myParser.disconnect(reason);
         }
+        if (myParserBridge != null) { myParserBridge.clear(); }
+        if (myScriptHandler != null) { myScriptHandler.unload(); }
+        myParserBridge = null;
+        myScriptHandler = null;
         myParser = null;
         return true;
     }
@@ -207,8 +242,34 @@ public class Server implements ServerReadyListener, DataInListener, DataOutListe
                 parser.joinChannel(channel);
             }
         }
+    }
 
-         myScriptHandler.callBound("onServerReady", parser, date);
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void onNickInUse(final Parser parser, final Date date, final String nickname) {
+        if (parser instanceof IRCParser && !got001) {
+            final IRCParser ircParser = (IRCParser)parser;
+            // If this is before 001 we will try and get a nickname, else we will leave the nick as-is
+            if (triedAlt) {
+                final MyInfo myInfo = ircParser.getMyInfo();
+                final String magicAltNick = "_" + myInfo.getNickname();
+                if (parser.getStringConverter().equalsIgnoreCase(thinkNickname, myInfo.getAltNickname()) && !myInfo.getAltNickname().equalsIgnoreCase(magicAltNick)) {
+                    thinkNickname = myInfo.getNickname();
+                }
+                parser.getLocalClient().setNickname(myInfo.getPrependChar() + thinkNickname);
+            } else {
+                parser.getLocalClient().setNickname(ircParser.getMyInfo().getAltNickname());
+                triedAlt = true;
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void onNumeric(final Parser parser, final Date date, final int numeric, final String[] token) {
+        if (numeric == 1) { got001 = true; }
     }
 
     /** {@inheritDoc} */

@@ -25,6 +25,9 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
 /**
+ * This class makes sure that all java objects are wrapped with the correct
+ * Wrapper Object.
+ *
  * From http://codeutopia.net/blog/2009/01/02/sandboxing-rhino-in-java/
  */
 public class WrapFactory extends org.mozilla.javascript.WrapFactory {

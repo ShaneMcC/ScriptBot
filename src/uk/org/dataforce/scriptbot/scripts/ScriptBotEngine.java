@@ -22,14 +22,25 @@
 package uk.org.dataforce.scriptbot.scripts;
 
 import java.io.FileReader;
-import javax.script.Compilable;
-import javax.script.Invocable;
 import javax.script.ScriptException;
 
 /**
  * Base interface for ScriptBotEngine's
  */
 public interface ScriptBotEngine {
+    /**
+     * Evaluate the given filereader as script.
+     *
+     * @param fileReader reader to evaluate.
+     * @throw ScriptException if there was an exception when evaluating.
+     */
     public void eval(final FileReader fileReader) throws ScriptException;
+
+    /**
+     * Put the given object into global scope with the given variable name.
+     *
+     * @param string Name of object
+     * @param object The object
+     */
     public void put(final String string, final Object object);
 }

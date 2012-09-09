@@ -36,10 +36,16 @@ import uk.org.dataforce.scriptbot.scripts.ScriptBotEngine;
 
 /**
  * Rhino Script Bot Engine.
+ *
+ * This class is used to interact between the bot and scripts.
  */
 public class RhinoScriptEngine implements ScriptBotEngine, Invocable {
+    // Engine variable scope.
     private Scriptable engineScope;
 
+    /**
+     * Create a new RhinoeScriptEngine and set the default scope.
+     */
     public RhinoScriptEngine() {
         final Context cx = enterContext();
         engineScope = cx.initStandardObjects();
@@ -47,6 +53,11 @@ public class RhinoScriptEngine implements ScriptBotEngine, Invocable {
         Context.exit();
     }
 
+    /**
+     * Enter a context and make sure we use the right wrapper and shutter.
+     *
+     * @return Context that we are now in.
+     */
     private Context enterContext() {
         final Context cx = Context.enter();
         cx.setWrapFactory(new WrapFactory());
@@ -54,6 +65,7 @@ public class RhinoScriptEngine implements ScriptBotEngine, Invocable {
         return cx;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void eval(final FileReader fileReader) throws ScriptException {
         try {
@@ -68,6 +80,7 @@ public class RhinoScriptEngine implements ScriptBotEngine, Invocable {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void put(final String string, final Object object) {
         final Context cx = enterContext();
@@ -79,11 +92,13 @@ public class RhinoScriptEngine implements ScriptBotEngine, Invocable {
     }
 
 
+    /** {@inheritDoc} */
     @Override
     public Object invokeFunction(final String name, final Object... args) throws ScriptException, NoSuchMethodException {
         return invokeMethod(null, name, args);
     }
 
+    /** {@inheritDoc} */
     @Override
     public Object invokeMethod(Object thiz, final String name, final Object... args) throws ScriptException, NoSuchMethodException {
         if (thiz != null && !(thiz instanceof Scriptable)) {
@@ -107,6 +122,14 @@ public class RhinoScriptEngine implements ScriptBotEngine, Invocable {
         }
     }
 
+    /**
+     * Invoke the given method on the given object, with the given args.
+     *
+     * @param thiz Object to invoke method on (or null for global method)
+     * @param obj Object to invoke (Should be some kind of Function Object)
+     * @param args Arguments for the function.
+     * @return Object result from function call.
+     */
     public Object invokeMethod(Object thiz, final Object obj, final Object... args) throws ScriptException, NoSuchMethodException {
         if (thiz != null && !(thiz instanceof Scriptable)) {
             final Context cx = enterContext();
@@ -137,6 +160,13 @@ public class RhinoScriptEngine implements ScriptBotEngine, Invocable {
          }
     }
 
+    /**
+     * Wrap the given arguments in the correct wrapper classes to pass to
+     * scripts
+     *
+     * @param args Arguments to wrap.
+     * @return Wrapps args.
+     */
     private Object[] wrap(final Object[] args) {
         if (args == null) { return Context.emptyArgs; }
 
@@ -149,16 +179,24 @@ public class RhinoScriptEngine implements ScriptBotEngine, Invocable {
         return res;
     }
 
+    /**
+     * Unwrap the given object result
+     *
+     * @param result Result to unwrap
+     * @return Unwrapped result
+     */
     private Object unwrap(final Object result) {
         final Object res = (result instanceof Wrapper) ? ((Wrapper)result).unwrap() : result;
         return (res instanceof Undefined) ? null : res;
     }
 
+    /** {@inheritDoc} */
     @Override
     public <T> T getInterface(final Class<T> clasz) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
+    /** {@inheritDoc} */
     @Override
     public <T> T getInterface(final Object thiz, final Class<T> clasz) {
         throw new UnsupportedOperationException("Not supported.");

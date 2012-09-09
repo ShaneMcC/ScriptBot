@@ -19,27 +19,51 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package uk.org.dataforce.scriptbot.scripts.rhinosandbox;
+package uk.org.dataforce.scriptbot.scripts;
 
 /**
- * This class controls what classes scripts in the VM have access to.
- *
- * From http://codeutopia.net/blog/2009/01/02/sandboxing-rhino-in-java/
+ * Class representing a bound method call.
  */
-public class ClassShutter implements org.mozilla.javascript.ClassShutter {
+public class BoundMethod {
+    /** Object that is bound. */
+    final Object object;
+    /** Method that is bound. */
+    final Object method;
+
+    /**
+     * Create a new BoundMethod
+     *
+     * @param object Object to bind.
+     * @param method Method to bind.
+     */
+    public BoundMethod(final Object object, final Object method) {
+        this.object = object;
+        this.method = method;
+    }
+
     /** {@inheritDoc} */
     @Override
-    public boolean visibleToScripts(String className) {
-        if (className.startsWith("adapter") ||
-            className.startsWith("com.dmdirc.parser.") ||
-            className.startsWith("java.util.") ||
-            className.startsWith("uk.org.dataforce.scriptbot.scripts.ScriptBridge") ||
-            className.startsWith("uk.org.dataforce.scriptbot.scripts.BoundMethod")) {
-            return true;
-        } else if (className.startsWith("uk.org.dataforce.scriptbot") && !className.startsWith("uk.org.dataforce.scriptbot.scripts")) {
-            return true;
+    public boolean equals(Object o) {
+        if (o instanceof BoundMethod) {
+            final BoundMethod bm = (BoundMethod) o;
+            if (this.object == null && bm.object != null) {
+                return false;
+            }
+            if (this.method == null && bm.method != null) {
+                return false;
+            }
+            return this.object.equals(bm.object) && this.method.equals(bm.method);
         }
-
         return false;
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + (this.object != null ? this.object.hashCode() : 0);
+        hash = 29 * hash + (this.method != null ? this.method.hashCode() : 0);
+        return hash;
+    }
+
 }
