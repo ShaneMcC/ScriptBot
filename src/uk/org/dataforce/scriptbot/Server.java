@@ -186,6 +186,7 @@ public class Server implements ServerReadyListener, DataInListener, DataOutListe
      */
     public boolean begin() {
         if (myParser != null) { return false; }
+        if (!configFile.getBoolOption("server", "enabled", false)) { return false; }
 
         try {
             myParser = createParser();
