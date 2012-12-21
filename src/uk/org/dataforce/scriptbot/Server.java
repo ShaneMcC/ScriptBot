@@ -186,14 +186,17 @@ public class Server implements ServerReadyListener, DataInListener, DataOutListe
      */
     public boolean begin() {
         if (myParser != null) { return false; }
-        if (!configFile.getBoolOption("server", "enabled", false)) { return false; }
+        if (!configFile.getBoolOption("server", "enabled", false)) {
+            logger.error("Server not enabled, aborting.");
+            return false;
+        }
 
         try {
             myParser = createParser();
         } catch (final URISyntaxException use) {
+            logger.error("Error creating parser: " + use);
             return false;
         }
-
         myScriptHandler = new ScriptHandler(this);
         if (configFile.hasFlatDomain("scripts")) {
             for (final String script : configFile.getFlatDomain("scripts")) {

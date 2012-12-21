@@ -33,6 +33,7 @@ public class ClassShutter implements org.mozilla.javascript.ClassShutter {
         if (className.startsWith("adapter") ||
             className.startsWith("com.dmdirc.parser.") ||
             className.startsWith("java.util.") ||
+            className.startsWith("java.lang.") ||
             className.startsWith("uk.org.dataforce.scriptbot.scripts.ScriptBridge") ||
             className.startsWith("uk.org.dataforce.scriptbot.scripts.BoundMethod")) {
             return true;
