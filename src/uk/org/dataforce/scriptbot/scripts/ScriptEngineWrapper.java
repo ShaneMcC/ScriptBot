@@ -28,6 +28,7 @@ import javax.script.CompiledScript;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
+import uk.org.dataforce.scriptbot.config.Config;
 
 /**
  * ScriptBotEngine that Wraps the standard java ScriptEngine
@@ -37,13 +38,17 @@ class ScriptEngineWrapper implements ScriptBotEngine, Compilable, Invocable {
     /** My Engine */
     final ScriptEngine myEngine;
 
+    /** My Config file */
+    final Config myConfig;
+
     /**
      * Create a new ScriptEngineWrapper that Wraps the given ScriptEngine
      *
      * @param engine ScriptEngine to wrap.
      */
-    public ScriptEngineWrapper(final ScriptEngine engine) {
+    public ScriptEngineWrapper(final ScriptEngine engine, final Config config) {
         myEngine = engine;
+        myConfig = config;
     }
 
     /** {@inheritDoc} */

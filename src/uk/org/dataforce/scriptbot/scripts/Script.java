@@ -29,6 +29,7 @@ import javax.script.Invocable;
 import javax.script.ScriptException;
 import uk.org.dataforce.libs.logger.LogFactory;
 import uk.org.dataforce.libs.logger.Logger;
+import uk.org.dataforce.scriptbot.config.Config;
 import uk.org.dataforce.scriptbot.scripts.rhinosandbox.RhinoScriptEngine;
 
 /**
@@ -49,6 +50,9 @@ public class Script {
     /** My script bridge. */
     private ScriptBridge myScriptBridge = new ScriptBridge(this);
 
+    /** My config file. */
+    private Config myConfig;
+
     /** My file. */
     private final File myFile;
 
@@ -64,11 +68,12 @@ public class Script {
      * @param type Script type.
      * @return True if script loaded.
      */
-    public Script(final ScriptHandler handler, final File file, final String type) throws ScriptException {
+    public Script(final ScriptHandler handler, final File file, final String type, final Config config) throws ScriptException {
         myHandler = handler;
         myFile = file;
         myLogger.setTag(myHandler.getServer().getName() + ">" + file.getName());
         myType = type;
+        myConfig = config;
 
         myEngine = initEngine();
     }
@@ -81,12 +86,12 @@ public class Script {
                 myHandler.getLogger().error("Unable to find ScriptEngine for: '" + myFile + "' (No file extension found)");
             }
             final String extension = myFile.getName().substring(myFile.getName().lastIndexOf('.') + 1);
-            newEngine = ScriptFactory.getEngineByExtension(extension);
+            newEngine = ScriptFactory.getEngineByExtension(extension, myConfig);
             if (newEngine == null) {
                 throw new ScriptException("Unable to find ScriptEngine for: '" + myFile + "' (Extension: '" + extension + "')");
             }
         } else {
-            newEngine = ScriptFactory.getEngineByType(myType);
+            newEngine = ScriptFactory.getEngineByType(myType, myConfig);
             if (newEngine == null) {
                 throw new ScriptException("Unable to find ScriptEngine for: '" + myFile + "' (Type: '" + myType + "')");
             }

@@ -21,12 +21,14 @@
  */
 package uk.org.dataforce.scriptbot.scripts.rhinosandbox;
 
+import java.util.Collections;
 import org.mozilla.javascript.Context;
 
 /**
- * This is used to ensure we generate contexts with the correct WrapFactory
- * and ClassShutter.
- * 
+ * This is the global ContextFactoyr used to ensure we generate contexts with
+ * the correct WrapFactory and ClassShutter in all cases, this does not honour
+ * the per-server goodClasses and badClasses lists.
+ *
  * From http://codeutopia.net/blog/2009/01/02/sandboxing-rhino-in-java/
  */
 public class ContextFactory extends org.mozilla.javascript.ContextFactory {
@@ -35,7 +37,7 @@ public class ContextFactory extends org.mozilla.javascript.ContextFactory {
     protected Context makeContext() {
         Context cx = super.makeContext();
         cx.setWrapFactory(new WrapFactory());
-        cx.setClassShutter(new ClassShutter());
+        cx.setClassShutter(new ClassShutter(Collections.<String>emptyList(), Collections.<String>emptyList()));
         return cx;
     }
 

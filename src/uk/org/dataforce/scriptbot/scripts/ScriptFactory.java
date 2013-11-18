@@ -22,6 +22,7 @@
 package uk.org.dataforce.scriptbot.scripts;
 
 import javax.script.ScriptEngineManager;
+import uk.org.dataforce.scriptbot.config.Config;
 import uk.org.dataforce.scriptbot.scripts.rhinosandbox.RhinoScriptEngine;
 
 /**
@@ -37,12 +38,12 @@ public class ScriptFactory {
      *
      * @param extension Extension that engine must support.
      */
-    public static ScriptBotEngine getEngineByExtension(final String extension) {
+    public static ScriptBotEngine getEngineByExtension(final String extension, final Config config) {
         if (extension.equalsIgnoreCase("js")) {
             // We need to emulate a proper ScriptEngine/Factory.. but untill then...
-            return new RhinoScriptEngine();
+            return new RhinoScriptEngine(config);
         } else {
-            return new ScriptEngineWrapper(scriptEngineManager.getEngineByExtension(extension));
+            return new ScriptEngineWrapper(scriptEngineManager.getEngineByExtension(extension), config);
         }
     }
 
@@ -51,12 +52,12 @@ public class ScriptFactory {
      *
      * @param type Type of engine to get.
      */
-    public static ScriptBotEngine getEngineByType(final String type) {
+    public static ScriptBotEngine getEngineByType(final String type, final Config config) {
         if (type.equalsIgnoreCase("javascript")) {
             // We need to emulate a proper ScriptEngine/Factory.. but untill then...
-            return new RhinoScriptEngine();
+            return new RhinoScriptEngine(config);
         } else {
-            return new ScriptEngineWrapper(scriptEngineManager.getEngineByName(type));
+            return new ScriptEngineWrapper(scriptEngineManager.getEngineByName(type), config);
         }
     }
 }

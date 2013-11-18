@@ -81,7 +81,7 @@ public class ScriptHandler {
     public boolean loadScript(final File file, final String type) {
         if (file.exists() && getScript(file) == null) {
             try {
-                final Script script = new Script(this, file, type);
+                final Script script = new Script(this, file, type, myServer.getConfig());
                 if (script.load()) {
                     synchronized (scripts) {
                         scripts.put(getFilePath(file), script);

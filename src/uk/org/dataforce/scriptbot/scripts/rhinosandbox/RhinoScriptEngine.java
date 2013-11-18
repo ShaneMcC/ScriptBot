@@ -23,6 +23,8 @@ package uk.org.dataforce.scriptbot.scripts.rhinosandbox;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import javax.script.Invocable;
 import javax.script.ScriptException;
 import org.mozilla.javascript.Context;
@@ -32,6 +34,7 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.Undefined;
 import org.mozilla.javascript.Wrapper;
+import uk.org.dataforce.scriptbot.config.Config;
 import uk.org.dataforce.scriptbot.scripts.ScriptBotEngine;
 
 /**
@@ -40,13 +43,21 @@ import uk.org.dataforce.scriptbot.scripts.ScriptBotEngine;
  * This class is used to interact between the bot and scripts.
  */
 public class RhinoScriptEngine implements ScriptBotEngine, Invocable {
-    // Engine variable scope.
+    /** Engine variable scope. */
     private Scriptable engineScope;
+
+    /** Additional classes to allow apart from the defaults in the sandbox. */
+    private List<String> goodClasses;
+
+    /** Classes to specifically deny in the sandbox. */
+    private List<String> badClasses;
 
     /**
      * Create a new RhinoeScriptEngine and set the default scope.
      */
-    public RhinoScriptEngine() {
+    public RhinoScriptEngine(final Config config) {
+        this.goodClasses = config.hasFlatDomain("rhino.goodClasses") ? config.getFlatDomain("rhino.goodClasses") : Collections.<String>emptyList();
+        this.badClasses = config.hasFlatDomain("rhino.badClasses") ? config.getFlatDomain("rhino.badClasses") : Collections.<String>emptyList();
         final Context cx = enterContext();
         engineScope = cx.initStandardObjects();
         engineScope.setParentScope(null);
@@ -61,7 +72,7 @@ public class RhinoScriptEngine implements ScriptBotEngine, Invocable {
     private Context enterContext() {
         final Context cx = Context.enter();
         try {
-            cx.setClassShutter(new ClassShutter());
+            cx.setClassShutter(new ClassShutter(this.goodClasses, this.badClasses));
             cx.setWrapFactory(new WrapFactory());
         } catch (final SecurityException se) {
             // ClassShutter is already set, so we might be already in a context
