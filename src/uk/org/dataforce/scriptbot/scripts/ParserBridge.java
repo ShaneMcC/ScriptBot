@@ -37,12 +37,13 @@ public class ParserBridge {
     private Server myServer;
 
     /** Map of callbacks we have created. */
+    @SuppressWarnings("rawtypes")
     final Map<Class, CallbackInterface> callbacks = new HashMap<Class, CallbackInterface>();
 
     /**
      * Create a new ParserBridge for the given server.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public ParserBridge(final Server server) {
         try {
             myServer = server;
@@ -70,7 +71,7 @@ public class ParserBridge {
     /**
      * Clear all callbacks.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public void clear() {
         for (Map.Entry<Class, CallbackInterface> entry : callbacks.entrySet()) {
             final CallbackManager cbm = myServer.getParser().getCallbackManager();

@@ -8,12 +8,12 @@ import com.dmdirc.parser.interfaces.callbacks.CallbackInterface;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Arrays;
 
 /**
  *
  * @author shane
  */
+@SuppressWarnings("rawtypes")
 public class ScriptInvocationHandler implements InvocationHandler {
     /** Class we are pretending to be. */
     final Class myClass;

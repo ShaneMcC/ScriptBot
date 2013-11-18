@@ -33,6 +33,7 @@ import org.mozilla.javascript.Scriptable;
 public class WrapFactory extends org.mozilla.javascript.WrapFactory {
     /** {@inheritDoc} */
     @Override
+    @SuppressWarnings("rawtypes")
     public Scriptable wrapAsJavaObject(final Context cx, final Scriptable scope, final Object javaObject, final Class staticType) {
         return new NativeJavaObject(scope, javaObject, staticType);
     }

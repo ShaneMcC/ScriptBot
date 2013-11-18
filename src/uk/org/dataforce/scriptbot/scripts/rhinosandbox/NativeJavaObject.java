@@ -33,6 +33,7 @@ public class NativeJavaObject extends org.mozilla.javascript.NativeJavaObject {
 
     static final long serialVersionUID = -6948590651130498591L;
 
+    @SuppressWarnings("rawtypes")
     public NativeJavaObject(final Scriptable scope, final Object javaObject, final Class staticType) {
         super(scope, javaObject, staticType);
     }
