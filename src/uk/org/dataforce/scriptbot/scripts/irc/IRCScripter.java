@@ -34,69 +34,53 @@ import uk.org.dataforce.scriptbot.scripts.ScriptObject;
  * on commands (rather than parsing "onChannelMessage" events) and dealing with
  * user levels.
  *
+ * The non-global IRCScripter (this class) is the actual interface that scripts
+ * have access to, and hands off to the GlobalIRCScripter where required.
+ *
  * @author Shane Mc Cormack <shanemcc@gmail.com>
  */
 public class IRCScripter implements ScriptObject {
-    /** The script that owns this IRCScripter. */
+    /** The script that owns this this IRCScripter. */
     private Script myScript;
 
-    /** The event handler for this IRCScripter. */
-    private EventHandler myEventHandler = new EventHandler(this);
+    /** The Global IRCScripter. */
+    private GlobalIRCScripter myGlobalIRCScripter;
 
     /** List storing bindings. */
     private final Map<String, BoundMethod> bindings = new HashMap<String, BoundMethod>();
 
     /**
      * Create a new IRCScripter.
-     *
-     * @param script Script that owns this IRCScripter.
      */
-    public IRCScripter(final Script script) {
+    public IRCScripter(final GlobalIRCScripter globalIRCScripter, final Script script) {
+        myGlobalIRCScripter = globalIRCScripter;
         myScript = script;
     }
 
     /**
-     * Get the EventHandler object for this IRCScripter.
+     * Get the Script object for this IRCScripter.
      *
-     * @return the EventHandler object for this IRCScripter.
-     */
-    public EventHandler __getEventHandler() {
-        return myEventHandler;
-    }
-
-    /**
-     * Get the script object that owns us.
-     *
-     * @return the script object that owns us.
+     * @return the Script object for this IRCScripter.
      */
     public Script __getScript() {
         return myScript;
     }
 
     /**
-     * Get the command bindings we currently know about.
-     *
-     * @return the script object that owns us.
-     */
-    protected BoundMethod __getBoundMethod(final String command) {
-        synchronized (bindings) {
-            return bindings.get(command.toLowerCase());
-        }
-    }
-
-    /**
-     * Used by scripts to bind to a command.
+     * Used by scripts to bind to a channel command.
      *
      * @param command Command to bind to.
      * @param flags Flags for the binding, currently unused.
+     * @param object Object to bind on.
      * @param method Method to bind.
+     * @return BoundMethod.
      */
     public BoundMethod bindCommand(final String command, final String flags, final Object method) {
-        return bindCommand(command, flags, null, method);
+        return this.bindCommand(command, flags, null, method);
     }
 
     /**
-     * Used by scripts to bind to a parser command.
+     * Used by scripts to bind to a channel command.
      *
      * @param command Command to bind to.
      * @param flags Flags for the binding, currently unused.
@@ -105,12 +89,7 @@ public class IRCScripter implements ScriptObject {
      * @return BoundMethod.
      */
     public BoundMethod bindCommand(final String command, final String flags, final Object object, final Object method) {
-        synchronized (bindings) {
-            if (bindings.containsKey(command.toLowerCase())) { bindings.remove(command); }
-            final BoundMethod boundMethod = new BoundMethod(object, method);
-            bindings.put(command.toLowerCase(), boundMethod);
-            return boundMethod;
-        }
+        return myGlobalIRCScripter.bindCommand(this, command, flags, object, method);
     }
 
     /**
@@ -119,9 +98,7 @@ public class IRCScripter implements ScriptObject {
      * @param command Command to unbind.
      */
     public void unbindCommand(final String command) {
-        synchronized (bindings) {
-            bindings.remove(command.toLowerCase());
-        }
+        myGlobalIRCScripter.unbindCommand(command);
     }
 
     /**
@@ -133,7 +110,7 @@ public class IRCScripter implements ScriptObject {
      */
     @Deprecated
     public boolean hasBotFlag(final ChannelClientInfo cci, final char flag) {
-        return hasBotFlag(cci.getClient(), flag);
+        return this.hasBotFlag(cci.getClient(), flag);
     }
 
     /**

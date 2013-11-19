@@ -21,7 +21,6 @@
  */
 package uk.org.dataforce.scriptbot.scripts;
 
-import com.dmdirc.parser.interfaces.Parser;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,6 +31,7 @@ import java.util.Set;
 import javax.script.ScriptException;
 import uk.org.dataforce.libs.logger.Logger;
 import uk.org.dataforce.scriptbot.Server;
+import uk.org.dataforce.scriptbot.scripts.irc.GlobalIRCScripter;
 
 /**
  *
@@ -40,6 +40,9 @@ import uk.org.dataforce.scriptbot.Server;
 public class ScriptHandler {
     /** My Server. */
     private final Server myServer;
+
+    /** My IRC Scripter. */
+    private final GlobalIRCScripter ircScripter = new GlobalIRCScripter();
 
     /** Store Script State Name,Engine */
     private final Map<String, Script> scripts = new HashMap<String,Script>();
@@ -51,6 +54,7 @@ public class ScriptHandler {
      */
     public ScriptHandler(final Server server) {
         myServer = server;
+        server.getParser().getCallbackManager().addAllCallback(ircScripter);
     }
 
     /**
@@ -60,6 +64,15 @@ public class ScriptHandler {
      */
     public Server getServer() {
         return myServer;
+    }
+
+    /**
+     * Get the IRCScripter related to this ScriptHandler.
+     *
+     * @return The IRCScripter related to this ScriptHandler.
+     */
+    public GlobalIRCScripter getIRCScripter() {
+        return ircScripter;
     }
 
     /**
@@ -152,7 +165,7 @@ public class ScriptHandler {
     }
 
     /**
-     * Reload all scripts.
+     * Reload all scripts, order of loading is not guaranteed.
      */
     public void reloadAll() {
         synchronized (scripts) {
@@ -173,21 +186,6 @@ public class ScriptHandler {
             scripts.clear();
             for (final Script script : oldScripts) {
                 script.unload();
-            }
-        }
-    }
-
-
-    /**
-     * Temporary method to bind IRCScripters...
-     *
-     * @deprecated This may change.
-     */
-    @Deprecated
-    public void bindIRCScripters(final Parser parser) {
-        synchronized (scripts) {
-            for (final Script script : new ArrayList<Script>(scripts.values())) {
-                parser.getCallbackManager().addAllCallback(script.getIRCScripter().__getEventHandler());
             }
         }
     }

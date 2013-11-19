@@ -95,7 +95,7 @@ public class ScriptBridge implements ScriptObject {
                 bindings.put(event, new LinkedHashSet<BoundMethod>());
             }
             final Set<BoundMethod> items = bindings.get(event);
-            final BoundMethod boundMethod = new BoundMethod(object, method);
+            final BoundMethod boundMethod = new BoundMethod(null, object, method);
             items.add(boundMethod);
             return boundMethod;
         }
@@ -128,7 +128,7 @@ public class ScriptBridge implements ScriptObject {
                 bindings.remove(event);
             } else {
                 final Set<BoundMethod> items = bindings.get(event);
-                items.remove(new BoundMethod(object, method));
+                items.remove(new BoundMethod(null, object, method));
             }
         }
     }

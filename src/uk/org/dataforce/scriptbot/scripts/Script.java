@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Properties;
 import javax.script.Invocable;
 import javax.script.ScriptException;
 import uk.org.dataforce.libs.logger.LogFactory;
@@ -52,7 +53,7 @@ public class Script {
     private ScriptBridge myScriptBridge = new ScriptBridge(this);
 
     /** IRC Scripter. */
-    private IRCScripter myIRCScripter = new IRCScripter(this);
+    private IRCScripter myIRCScripter;
 
     /** My config file. */
     private Config myConfig;
@@ -74,6 +75,7 @@ public class Script {
      */
     public Script(final ScriptHandler handler, final File file, final String type, final Config config) throws ScriptException {
         myHandler = handler;
+        myIRCScripter = new IRCScripter(myHandler.getIRCScripter(), this);
         myFile = file;
         myLogger.setTag(myHandler.getServer().getName() + ">" + file.getName());
         myType = type;
@@ -155,9 +157,10 @@ public class Script {
         final ScriptBotEngine engine = initEngine();
         if (engine != null) {
             final ScriptBridge bridge = new ScriptBridge(this);
-            final IRCScripter ircscripter = new IRCScripter(this);
+            final IRCScripter ircscripter = new IRCScripter(myHandler.getIRCScripter(), this);
 
             if (load(engine, bridge, ircscripter)) {
+                myHandler.getIRCScripter().unbindScripter(myIRCScripter);
                 myScriptBridge.unbindAll();
                 myScriptBridge = bridge;
                 myIRCScripter = ircscripter;
@@ -180,6 +183,7 @@ public class Script {
         // call("onScriptUnloaded");
         getLogger().info("Unloaded script '" + getFilePath(myFile) + "'");
         myScriptBridge.unbindAll();
+        myHandler.getIRCScripter().unbindScripter(myIRCScripter);
         myEngine.put("bot", null);
         myEngine.put("irc", null);
         myEngine = null;

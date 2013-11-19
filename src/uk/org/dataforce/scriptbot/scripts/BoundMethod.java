@@ -21,10 +21,14 @@
  */
 package uk.org.dataforce.scriptbot.scripts;
 
+import uk.org.dataforce.scriptbot.scripts.irc.IRCScripter;
+
 /**
  * Class representing a bound method call.
  */
 public class BoundMethod {
+    /** Script object that requested the binding. */
+    public final IRCScripter scripter;
     /** Object that is bound. */
     public final Object object;
     /** Method that is bound. */
@@ -33,10 +37,12 @@ public class BoundMethod {
     /**
      * Create a new BoundMethod
      *
+     * @param script Script that requested the binding.
      * @param object Object to bind.
      * @param method Method to bind.
      */
-    public BoundMethod(final Object object, final Object method) {
+    public BoundMethod(final IRCScripter scripter, final Object object, final Object method) {
+        this.scripter = scripter;
         this.object = object;
         this.method = method;
     }
@@ -52,7 +58,10 @@ public class BoundMethod {
             if (this.method == null && bm.method != null) {
                 return false;
             }
-            return this.object.equals(bm.object) && this.method.equals(bm.method);
+            if (this.scripter == null && bm.scripter != null) {
+                return false;
+            }
+            return this.object.equals(bm.object) && this.method.equals(bm.method) && this.scripter.equals(bm.scripter);
         }
         return false;
     }
@@ -63,6 +72,7 @@ public class BoundMethod {
         int hash = 7;
         hash = 29 * hash + (this.object != null ? this.object.hashCode() : 0);
         hash = 29 * hash + (this.method != null ? this.method.hashCode() : 0);
+        hash = 29 * hash + (this.scripter != null ? this.scripter.hashCode() : 0);
         return hash;
     }
 
