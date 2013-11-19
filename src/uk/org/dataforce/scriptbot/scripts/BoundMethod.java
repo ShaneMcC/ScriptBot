@@ -26,9 +26,9 @@ package uk.org.dataforce.scriptbot.scripts;
  */
 public class BoundMethod {
     /** Object that is bound. */
-    final Object object;
+    public final Object object;
     /** Method that is bound. */
-    final Object method;
+    public final Object method;
 
     /**
      * Create a new BoundMethod

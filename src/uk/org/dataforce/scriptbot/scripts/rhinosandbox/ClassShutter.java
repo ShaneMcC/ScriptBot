@@ -56,6 +56,7 @@ public class ClassShutter implements org.mozilla.javascript.ClassShutter {
             className.startsWith("java.lang.") ||
             className.startsWith("org.mozilla.javascript.") || // Unsure about this one, but allow it for now.
             className.startsWith("uk.org.dataforce.scriptbot.scripts.ScriptBridge") ||
+            className.startsWith("uk.org.dataforce.scriptbot.scripts.irc.IRCScripter") ||
             className.startsWith("uk.org.dataforce.scriptbot.scripts.BoundMethod")) {
             return true;
         } else if (className.startsWith("uk.org.dataforce.scriptbot") && !className.startsWith("uk.org.dataforce.scriptbot.scripts")) {

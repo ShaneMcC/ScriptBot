@@ -212,6 +212,9 @@ public class Server implements ServerReadyListener, DataInListener, DataOutListe
         triedAlt = false;
         myParser.getCallbackManager().addAllCallback(this);
         myParserBridge = new ParserBridge(this);
+        // Bind the IRC Scripters
+        myScriptHandler.bindIRCScripters(myParser);
+
         myParser.connect();
 
         return true;

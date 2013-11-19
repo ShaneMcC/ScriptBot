@@ -21,6 +21,7 @@
  */
 package uk.org.dataforce.scriptbot.scripts;
 
+import com.dmdirc.parser.interfaces.Parser;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -172,6 +173,21 @@ public class ScriptHandler {
             scripts.clear();
             for (final Script script : oldScripts) {
                 script.unload();
+            }
+        }
+    }
+
+
+    /**
+     * Temporary method to bind IRCScripters...
+     *
+     * @deprecated This may change.
+     */
+    @Deprecated
+    public void bindIRCScripters(final Parser parser) {
+        synchronized (scripts) {
+            for (final Script script : new ArrayList<Script>(scripts.values())) {
+                parser.getCallbackManager().addAllCallback(script.getIRCScripter().__getEventHandler());
             }
         }
     }

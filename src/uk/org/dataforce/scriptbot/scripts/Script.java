@@ -30,6 +30,7 @@ import javax.script.ScriptException;
 import uk.org.dataforce.libs.logger.LogFactory;
 import uk.org.dataforce.libs.logger.Logger;
 import uk.org.dataforce.scriptbot.config.Config;
+import uk.org.dataforce.scriptbot.scripts.irc.IRCScripter;
 import uk.org.dataforce.scriptbot.scripts.rhinosandbox.RhinoScriptEngine;
 
 /**
@@ -49,6 +50,9 @@ public class Script {
 
     /** My script bridge. */
     private ScriptBridge myScriptBridge = new ScriptBridge(this);
+
+    /** IRC Scripter. */
+    private IRCScripter myIRCScripter = new IRCScripter(this);
 
     /** My config file. */
     private Config myConfig;
@@ -106,7 +110,7 @@ public class Script {
      * @return True if script loaded.
      */
     public boolean load() {
-        return load(myEngine, myScriptBridge);
+        return load(myEngine, myScriptBridge, myIRCScripter);
     }
 
     /**
@@ -122,12 +126,14 @@ public class Script {
      * Load the script into the given engine with the given bridge.
      *
      * @param engine Engine to use.
-     * @param bridge Bridge to use
+     * @param bridge Bridge to use.
+     * @param ircscripter IRCScripter to use.
      * @return True if script loaded.
      */
-    private boolean load(final ScriptBotEngine engine, final ScriptBridge bridge) {
+    private boolean load(final ScriptBotEngine engine, final ScriptBridge bridge, final IRCScripter ircscripter) {
         try {
             engine.put("bot", bridge);
+            engine.put("irc", ircscripter);
             engine.eval(new FileReader(myFile));
             getLogger().info("Loaded script '" + getFilePath(myFile) + "'");
             // call("onScriptLoaded");
@@ -149,11 +155,14 @@ public class Script {
         final ScriptBotEngine engine = initEngine();
         if (engine != null) {
             final ScriptBridge bridge = new ScriptBridge(this);
+            final IRCScripter ircscripter = new IRCScripter(this);
 
-            if (load(engine, bridge)) {
+            if (load(engine, bridge, ircscripter)) {
                 myScriptBridge.unbindAll();
                 myScriptBridge = bridge;
+                myIRCScripter = ircscripter;
                 myEngine.put("bot", null);
+                myEngine.put("irc", null);
                 myEngine = engine;
                 getLogger().info("Reloading script '" + getFilePath(myFile) + "' was successful, new script is active.");
             } else {
@@ -172,6 +181,7 @@ public class Script {
         getLogger().info("Unloaded script '" + getFilePath(myFile) + "'");
         myScriptBridge.unbindAll();
         myEngine.put("bot", null);
+        myEngine.put("irc", null);
         myEngine = null;
         myScriptBridge = new ScriptBridge(this);
         myLogger = null;
@@ -232,6 +242,15 @@ public class Script {
      */
     public ScriptBridge getBridge() {
         return myScriptBridge;
+    }
+
+    /**
+     * Get the IRCScripter related to this script.
+     *
+     * @return IRCScripter for this script.
+     */
+    public IRCScripter getIRCScripter() {
+        return myIRCScripter;
     }
 
     /**

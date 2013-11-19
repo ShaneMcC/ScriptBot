@@ -1,39 +1,39 @@
-// This script is an eample.
+//-------------------------------------------------------------------------
+// Binds
+//-------------------------------------------------------------------------
+bot.bindEvent("onServerReady", "onServerReady");
+irc.bindCommand("!rehash", "-", "doRehash");
+irc.bindCommand("@eval", "-", "doEval");
+irc.bindCommand("@raw", "-", "doRaw");
 
-function serverReadyHandler(parser, date) {
-	bot.log("Server Ready");
-	parser.joinChannel("#AnotherChannel");
+
+//-------------------------------------------------------------------------
+// Bound Methods
+//-------------------------------------------------------------------------
+function onServerReady(parser, date) {
+	bot.log("Server Ready 1");
 }
 
-bot.bindEvent("onServerReady", "serverReadyHandler");
+function doRehash(parser, date, channel, client, command, args) {
+	if (!irc.hasBotFlag(client, 'n')) { return; }
 
-function onChannelMessage(parser, date, channel, client, message, host) {
-	if (message.indexOf("!rehash") == 0) {
-		channel.sendMessage("Reloading...");
-		bot.rehash();
-	} else if (message.indexOf("@") == 0) {
-		command = message.indexOf(" ") > 0 ? message.substring(1, message.indexOf(" ")) : message.substring(1);
-		args = message.indexOf(" ") > 0 ? message.substring(message.indexOf(" ") + 1) : ""
-		
-		if (command != "") {
-			processCommand(parser, channel, client, command, args);
-		}
-	} else {
-		channel.sendMessage(client + " said: " + message);
+	channel.sendMessage("Reloading...");
+	bot.rehash();
+}
+
+function doRaw(parser, date, channel, client, command, args) {
+	if (!irc.hasBotFlag(client, 'n')) { return; }
+
+	channel.sendMessage("Sent raw: " + args);
+	parser.sendRawMessage(args);
+}
+
+function doEval(parser, date, channel, client, command, args) {
+	if (!irc.hasBotFlag(client, 'n')) { return; }
+
+	try {
+		channel.sendMessage("Result: " + eval(args));
+	} catch (e) {
+		channel.sendMessage("Error: " + e);
 	}
 }
-
-function processCommand(parser, channel, client, command, args) {
-	if (command == "raw") {
-		channel.sendMessage("Sent raw: " + args);
-		parser.sendRawMessage(args);
-	} else if (command == "eval") {
-		try {
-			channel.sendMessage("Result: " + eval(args));
-		} catch (e) {
-			channel.sendMessage("Error: " + e);
-		}
-	}
-}
-
-bot.bindEvent("onChannelMessage", "onChannelMessage");

@@ -25,13 +25,14 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import uk.org.dataforce.libs.logger.LogLevel;
 
 /**
  * This class is used by Script's to interact with the bot.
  *
  * @author shane
  */
-public class ScriptBridge {
+public class ScriptBridge implements ScriptObject {
 
     /** The script that owns this bridge. */
     private Script myScript;
@@ -55,6 +56,19 @@ public class ScriptBridge {
      */
     public void log(final String line) {
         myScript.getLogger().info(line);
+    }
+
+    /**
+     * Used by scripts to write a line to the logger.
+     *
+     * @param line Line to log.
+     */
+    public void log(final String level, final String line) {
+        try {
+            myScript.getLogger().log(LogLevel.valueOf(level.toUpperCase()), line);
+        } catch (final IllegalArgumentException iae) {
+            myScript.getLogger().log(LogLevel.INFO, "[" + level.toUpperCase() + "] " + line);
+        }
     }
 
     /**

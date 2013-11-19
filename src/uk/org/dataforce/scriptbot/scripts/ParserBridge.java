@@ -49,6 +49,9 @@ public class ParserBridge {
             myServer = server;
 
             final CallbackManager cbm = myServer.getParser().getCallbackManager();
+
+            // Bind everything to the ScriptInvocationHandler so that scripts
+            // can bind to events.
             final Field field = cbm.getClass().getDeclaredField("CLASSES");
             field.setAccessible(true);
             final Class[] classes = (Class[])field.get(null);
@@ -73,6 +76,7 @@ public class ParserBridge {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void clear() {
+        // Clear our bindings.
         for (Map.Entry<Class, CallbackInterface> entry : callbacks.entrySet()) {
             final CallbackManager cbm = myServer.getParser().getCallbackManager();
             cbm.delCallback(entry.getKey(), entry.getValue());
