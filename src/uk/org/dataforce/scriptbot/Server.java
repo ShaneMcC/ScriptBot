@@ -172,6 +172,10 @@ public class Server implements ServerReadyListener, DataInListener, DataOutListe
                 parser.setBindIP(configFile.getOption("server", "bindip", ""));
             }
 
+            if (configFile.hasOption("server", "bindipv6")) {
+                parser.setBindIPv6(configFile.getOption("server", "bindipv6", ""));
+            }
+
             ircparser.setNickname(configFile.getOption("server", "nickname", ""));
 
         }
