@@ -11,6 +11,15 @@ bots that work on other platforms.
 
 For now, IRC only.
 
+## CI ##########################################################################
+
+ScriptBot Uses Travis-CI for Continuous Integration, the status of which is shown
+below.
+
+All pull requests must pass CI before being accepted.
+
+[![Build Status](https://travis-ci.org/ShaneMcC/ScriptBot.png?branch=master)](https://travis-ci.org/ShaneMcC/ScriptBot)
+
 # Usage #########################################################################
 
 Examples are in ExampleConfig, you can "mv ExampleConfig ScriptBot" to get
