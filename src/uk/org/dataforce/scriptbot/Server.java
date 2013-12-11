@@ -155,12 +155,12 @@ public class Server implements ServerReadyListener, DataInListener, DataOutListe
 
         if (parserType.equals("irc")) {
             final String scheme = configFile.getBoolOption("server", "ssl", false) ? "ircs" : "irc";
-            final URI uri = new URI(scheme, "", configFile.getOption("server", "host", "irc.quakenet.org"), configFile.getIntOption("server", "port", 6667), "", "", "");
+            final URI uri = new URI(scheme, "", configFile.getOption("server", "address", "127.0.0.1"), configFile.getIntOption("server", "port", 6667), "", "", "");
 
             final MyInfo myDetails = new MyInfo();
             final String nickname = configFile.getOption("server", "nickname", "ScriptBot");
             myDetails.setNickname(nickname);
-            myDetails.setAltNickname(configFile.getOption("server", "altnickname", nickname));
+            myDetails.setAltNickname(configFile.getOption("server", "altnickname", nickname + "`"));
             myDetails.setUsername(configFile.getOption("server", "username", nickname));
             myDetails.setRealname(configFile.getOption("server", "realname", nickname));
 
